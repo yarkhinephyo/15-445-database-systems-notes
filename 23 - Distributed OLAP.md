@@ -17,6 +17,7 @@ Snowflake schemas take up less storage space but incur consistency violations. S
 ![](images/Pasted%20image%2020221129121906.png)
 
 <u>Pull model</u> - Bring the data to the node executing the query. 
+
  ![](images/Pasted%20image%2020221129121852.png)  
  
  **Long running OLAP crash**

@@ -14,13 +14,11 @@ Each node maintains a log of messages in 2 phase commit (2PC). If there is a cra
 
 Coordinator assumes that the node has aborted if no acknowledgement is received.
 
-<u>2PC Optimization</u>
+<u>Early Prepare Voting (Rare)</u> - Coordinator sends the last query to remote node and the node return their vote for the prepared phase with the query result.
 
-In Early Prepare Voting (Rare), send the last query to remote node and the node return their vote for the prepared phase with the query result.
+<u>Early Ack After Prepare (Common)</u> - If all nodes vote to commit a transaction, the coordinator tells the application server that commit is successful. The coordinator does not wait for the nodes to acknowledge the commit message.
 
-In Early Ack After Prepare (Common), if all nodes vote to commit a transaction, the coordinator tells the application server that commit is successful. The coordinator does not wait for the nodes to acknowledge the commit message.
-
-<u>Paxos</u>
+**Paxos**
 
 Unless two phase comit, only the majority of the nodes have to agree.
 

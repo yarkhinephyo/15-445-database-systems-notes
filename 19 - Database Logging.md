@@ -28,7 +28,7 @@ Must make a copy of a page, only apply changes that T2 made and flush to page. A
 
 <u>Advantages</u> - Never have to undo changes of an aborted transaction because the changes are not written to disk. Never have to redo changes because all the changes are guaranteed to be written to disk.
 
-<u>Disadvantages</u> - If both transactions in the example commit, the buffer pool manager has to flush page twice. Cannot support writesets that exceed that physical memory (RAM) available.
+<u>Disadvantages</u> - For both transactions in the example commit, the buffer pool manager has to flush page twice. Cannot support writesets that exceed that physical memory (RAM) available.
 
 **Shadow paging**
 
