@@ -80,8 +80,14 @@ Strict 2PL.
 
 <u>Read committed</u>: Phantoms and unrepeatable reads may happen.
 
-2PL where shared locks are released immediately after the operation (no need to be shrinking phase). Guarantees that any data read has been committed at the moment that that it is read, but does not guarantee that it will find the same data again.
+Strict 2PL where shared locks are released immediately after the operation (no need to be shrinking phase). Guarantees that any data read has been committed at the moment that that it is read, but does not guarantee that it will find the same data again.
 
 <u>Read uncommitted</u>:  All may happen.
 
 2PL for exclusive locks. No shared locks.
+
+**My own note on 2PL, Strict 2PL, Rigourous 2PL**
+
+- 2PL: During shrinking phase, no new lock is requested.
+- Strict 2PL: During shrinking phase, exclusive locks are not released. Prevents cascading aborts and dirty reads. Read locks can be released.
+- Rigourous 2PL: During shrinking phase, no locks are released. There is no need to know the data access pattern (No need to gauge when read lock can be released).

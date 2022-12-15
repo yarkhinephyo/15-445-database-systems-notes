@@ -44,7 +44,7 @@ Prone to <u>write skew anomaly</u>.
 
 <u>Optimistic concurrency control</u> - Three-phase protocol with private workspace.
 
-<u>Two phase locking</u> - Transaction acquire local of physical version before reading and writing logical tuples.
+<u>Two phase locking</u> - Transaction acquire locks of physical version before reading and writing logical tuples.
 
 **MVCC + Two phase locking**
 
