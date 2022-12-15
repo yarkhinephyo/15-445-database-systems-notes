@@ -1,8 +1,8 @@
-Optimistic protocol where transactions are assumed not to conflict.
+**Optimistic protocol**: Transactions are assumed not to conflict.
 
 DBMS must ensure that execution schedule is equivalent to a serial schedule where transactions are ordered by timestamps.
 
-**Basic timestamp ordering (T/O) protocol**
+**Basic timestamp ordering (Basic T/O) protocol**
 
 Transactions do not use locks. Every object in database maintains two attributes - last_read_timestamp and last_write_timestamp. These timestamps must always move forward in time.
 
@@ -22,14 +22,16 @@ Allow violation of timestamp ordering protocol. If transaction timestamp is less
 
 **Problems with T/O protocol**
 
-High overhead for updating timestamps, every read requires a transaction to write to the database. Long running transactions can get starved as they are more likely to read something from a newer transaction.
+- High overhead for updating timestamps, every read requires a transaction to write to the database.
+- Long running transactions can get starved as they are more likely to read something from a newer transaction.
+- Timestamp allocation can be a bottleneck with high concurrency.
 
-**Optimistic concurrency control**: Private workspace for each transaction.
+**Optimistic concurrency control (OCC) protocol**: Private workspace for each transaction.
 
-Objects read are copied into workspace and modifications are applied to workspace. When a transaction commits, the DBMS compares workspace write set to see whether it conflicts with other transactions.
+Objects read are copied into workspace and modifications are applied to workspace. When a transaction commits, the DBMS compares its workspace to see whether it conflicts with other transactions.
 
 1. <u>Read phase</u> - Track read/write sets of transactions in private workspace.
-2. <u>Validation phase</u> - Timestamp is assigned during this phase. Check whether there is conflict.
+2. <u>Validation phase</u> - Timestamp is assigned during this phase. Check whether there are RW and WW conflicts with other transactions. If there are conflicts, ensure that all conflicts go one way.
 3. <u>Write phase</u> - If validation succeeds, write set is applied to the global database.
 
 <u>Backward validation</u>
@@ -43,6 +45,8 @@ Transaction checks if there is conflict with write_timestamp in the database.
 Check timestamp of the committing transaction against other running transactions. The transaction checks against other <u>private workspaces</u> instead of the database.
 
 ![](images/Pasted%20image%2020221103125709.png)
+
+![](images/Pasted%20image%2020221213172948.png)
 
 **Phantom problem**
 
@@ -72,10 +76,12 @@ Index locks (or range locks), plus strict 2PL.
 
 <u>Repeatable reads</u>: Phantoms may happen.
 
-Strict 2PL. Shared locks can be released during shrinking phase.
+Strict 2PL.
 
 <u>Read committed</u>: Phantoms and unrepeatable reads may happen.
 
 2PL where shared locks are released immediately after the operation (no need to be shrinking phase). Guarantees that any data read has been committed at the moment that that it is read, but does not guarantee that it will find the same data again.
 
 <u>Read uncommitted</u>:  All may happen.
+
+2PL for exclusive locks. No shared locks.

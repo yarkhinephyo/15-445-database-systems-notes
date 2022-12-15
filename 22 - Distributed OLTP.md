@@ -77,3 +77,7 @@ Impossible for a distributed system to be...
 Tradition DBMSs choose consistency and availability over network partition tolerance. If not the majority of nodes can be communicated, stop all requests.
 
 NoSQL DBMSs provide mechanisms to resolve conflicts after nodes are reconnected. When network is down, still can use the nodes.
+
+**PACELC Theorem**
+
+In case of network partitioning (P) in a distributed system, one has to choose between availability (A) and consistency (C), else (E), even when the system runs normally without network partitions, one has to choose between latency (L) and consistency (C).

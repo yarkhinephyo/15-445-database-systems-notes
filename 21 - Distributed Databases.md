@@ -7,7 +7,7 @@
 
 **Shared memory**: Each processor has a global view of the in-memory data structures. Each DBMS instance on a processor knows about other instances.
 
-**Shared disk**: All CPUs connect to disk via an interconnect. Can scale execution layer <u>independently</u> from storage layer. In theory, can kill the nodes any time, which is an advantage over Shared-Nothing architecture. Must send messages between nodes to know about current states.
+**Shared disk**: All CPUs connect to disk via an interconnect. Can scale execution layer <u>independently</u> from storage layer. In theory, can kill the nodes any time, which is an advantage over Shared-Nothing architecture. Must send messages between nodes to know about current states. More common in cloud-based DBMSs.
 
 <u>Examples</u> - Spark, Presto, Google BigQuery
 
@@ -23,7 +23,7 @@ Challenge is when a new node gets added, data has to be shuffled. Safely and tra
 
 **Homogenous Nodes**: Each node in the cluster can perform the same set of tasks as other nodes. Makes it easier for provisioning and failover.
 
-**Heterogenous Nodes**: Each node has a specific task.
+**Heterogenous Nodes**: Each node has a specific task. So communication must occur between nodes. Can independently scale from one node to another. For example, MongoDB has router nodes routing queries to shards and config nodes storing mappings from keys to shards.
 
 <u>Example in MonogDB</u>
 
@@ -52,6 +52,8 @@ Node communicates with other nodes that responsible for the IDs to retrieve the 
 ![](images/Pasted%20image%2020221120145308.png)
 
 <u>Physical partitioning</u>
+
+Each shared nothing nodes read and update tuples stored on its own disk.
 
 ![](images/Pasted%20image%2020221120145254.png)
 

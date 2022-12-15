@@ -16,13 +16,13 @@ The outputs can either be whole tuples (NSM) or subsets of columns (DSM).
 
 ![](images/Pasted%20image%2020221006131612.png)
 
-Fewer function calls than the Iterator Model, which will speed up the processing. Good for OLTP workloads that access a small number of tuples at a time.
+Fewer function calls than the Iterator Model, which will speed up the processing. Good for OLTP workloads that access a small number of tuples at a time. Not suited for OLAP queries as large intermediate results will have to be spilled onto disk between operators.
 
 <u>Vectorization Model</u>
 
 "Next" function that returns batches instead of a single tuple. The size of batch depends on the hardware or query properties. Makes uses of SIMD instructions.
 
-Ideal for OLAP because it greatly reduces the number of function invocations per operator.
+Ideal for OLAP because it greatly reduces the number of function invocations per operator (as compared to the normal iterator model).
 
 **Access Methods**
 
@@ -32,13 +32,20 @@ The way DBMS access the data in a table.
 
 For each page in the table, retrieve from the buffer pool and iterate over each tuple. The DBMS maintains cursor that tracks the last page and slot examined.
 
-Optimizations - Prefetching (pages into buffer pool), Buffer pool bypass (side buffer for scan-like queries to prevent buffer pool pollution), Parallelization (not covered yet), Heap Clustering (store pages in the order of primary key), Late Materialization (delay stitching together tuples in DSM till upper parts of query plan), Data Skippingi (Skip subsets of data to only approximate), Zone maps (Store summaries of each page to avoid checking if the value does not fit in)
+Optimizations - Prefetching (Pages into buffer pool), Buffer pool bypass (Side buffer for scan-like queries to prevent buffer pool pollution), Parallelization (Scan using multiple threads), Heap Clustering (Store pages in the order of primary key), Late Materialization (Delay stitching together tuples in DSM till upper parts of query plan), Approximate Queries (Lossy. Skip subsets of data to only approximate), Zone maps (Store summaries of each page to avoid checking if the value does not fit in)
 
 <u>Index Scan</u>
 
-Trying to recognize which index is more useful for a query.
+DBMS has to try and recognize which index is more useful for a query if a query has multiple predicates over one table. In the example below, if there are only 2 people in the CS department, it will be best to scan using that index.
 
-If there are multiple indexes, DBMS can get record IDs for each index and combine the sets based on the query's predicates such as union or intersect.
+```
+SELECT * FROM students
+WHERE age < 30
+	AND dept = 'CS'
+	AND country = 'US'
+```
+
+In multi-index scans, DBMS can get record IDs for each index simultaneously and combine the sets based on the query's predicates such as union or intersect.
 
 **Modification queries**
 
@@ -48,7 +55,7 @@ Operators that modify the database such as "INSERT", "UPDATE" are responsible fo
 
 <u>Insert</u> - Materialize tuples inside operator, or... operator inserts tuples passed in from child operators (better option).
 
-**Update Query Problem**
+**Update Query Problem (Halloween problem)**
 
 Updating a query by removing from index and reinserting into index may continuously update the same tuple.
 
@@ -61,6 +68,8 @@ Anomaly where an update operation changes the location of the tuple and the scan
 **Expression evaluation**
 
 "WHERE" clause as an expression tree. Each node represent expression types such as comparisons, conjunctions, arithmetic operators.
+
+To evaluate the expression at runtime, the DBMS maintains a context handle that contains metadata for the execution such as the current tuple and the table schema.
 
 ![](images/Pasted%20image%2020221006141004.png)
 
@@ -80,9 +89,9 @@ Not optimal because we rely on OS scheduler for the order of workers. Shared mem
 
 ![](images/Pasted%20image%2020221025105046.png)
 
-<u>Approach 2 - Thread per DBMS worker</u>
+<u>Approach 2 - Thread per DBMS worker (More common)</u>
 
-More common. DBMS manages its own scheduling. Less overhead for context switch and does not have to manage shared memory.
+DBMS manages its own scheduling. Less overhead for context switch and does not have to manage shared memory.
 
 The dispatcher thread can directly forward to another thread so that the outside application does not need to reconnect.
 
@@ -100,7 +109,7 @@ Non-preemptive thread scheduling, meaning the DBMS has to stop the threads after
 
 ![](images/Pasted%20image%2020221025110811.png)
 
-**Process models**
+**Process models (Continued)**
 
 <u>Approach 3 -  Embedded DBMS</u>
 
@@ -110,25 +119,19 @@ DBMS runs inside the same address space as the application. (Typically, the appl
 
 **Inter- vs Intra-query parallelism**
 
-<u>Interquery</u> - Execute multiple queries on separate workers.
+<u>Interquery</u> - Execute multiple queries on separate workers. Very little coordination required if queries are read-only. If not, concurrency control protocols are required.
 
 <u>Intraquery</u> - Execute the operations of a single query in parallel. Decreases latency for long running queries. This is done by executing query operators in parallel.
-
-**Parallel grace hash join**
-
-Use a separate worker to perform the join for each level of buckets after partitioning.
-
-![](images/Pasted%20image%2020221025112544.png)
 
 **Intra-query parallelism types**
 
 <u>Approach 1 - Intra-Operator (Horizontal)</u>
 
-Decompose operators into independent fragments that perform the same function on different subsets of data. The DBMS inserts an Exchange Operator that coalesce/split results from multiple children/parent operators. Does not exist in relational algebra.
+Decompose operators into independent <u>fragments</u> that perform the same function on different subsets of data. The DBMS inserts an Exchange Operator that coalesce/split results from multiple children/parent operators. Does not exist in relational algebra.
 
 ![](images/Pasted%20image%2020221025113243.png)
 
-"Gather" combine the results from multiple workers. "Distribute" split a single stream from child into disjoint sets and send them to above. "Repartition" coalesce multiple input streams and produce multiple output streams (Different number of input and output streams).
+The types of Exchange Operator are as follows. "Gather" combine the results from multiple workers. "Distribute" split a single stream from child into disjoint sets and send them to above. "Repartition" coalesce multiple input streams and produce multiple output streams (Different number of input and output streams).
 
 In the example below, "Gather" is completed first before probing is done in parallel.
 
@@ -157,3 +160,9 @@ Split DBMS across multiple storage devices to improve bandwidth and latency. Con
 Split the database into chunks and assign them to different storage devices.
 
 More popular. Split single table into disjoint physical segments that are stored separately.
+
+**Parallel grace hash join**
+
+Use a separate worker to perform the join for each level of buckets after partitioning.
+
+![](images/Pasted%20image%2020221025112544.png)

@@ -1,3 +1,7 @@
+**Bifurcated environment**
+
+![](images/Pasted%20image%2020221214211741.png)
+
 **Star schema**: Main analytical queries are done against Fact Tables and supplementary information is joined from the Dimension Tables. One Fact Table with outer ring of Dimension Tables.
 
 There is only one dimension of tables going out. For example, "product" and "category" instances are in the same table.
@@ -6,21 +10,21 @@ There is only one dimension of tables going out. For example, "product" and "cat
 
 **Snowflake schema (More common now)**: Dimension Tables are normalized into more than one dimensions.
 
-Snowflake schemas take up less storage space but incur consistency violations. Snowflake schemas may require more joins for a query.
+Snowflake schemas take up less storage space (with less redundant information) but incur consistency violations. Snowflake schemas may require more joins for a query.
 
 ![](images/Pasted%20image%2020221129120330.png)
 
 **Join data from different partitions**
 
-<u>Push model</u> - Send the query to the node which contains the data. Perform as much filtering as possible first.
+<u>Push model</u> - Send the query to the node which contains the data. Perform as much filtering as possible first. More common in a shared nothing system.
 
 ![](images/Pasted%20image%2020221129121906.png)
 
-<u>Pull model</u> - Bring the data to the node executing the query. 
+<u>Pull model</u> - Bring the data to the node executing the query. More common for a shared disk system.
 
  ![](images/Pasted%20image%2020221129121852.png)  
  
- **Long running OLAP crash**
+**Long running OLAP crash**
  
  For shared-nothing DBMSs, as soon as a node goes down, the query is aborted. 
  
@@ -41,6 +45,10 @@ Join algorithm involves two tables. Multiple scenarios can occur.
 4. Both tables are not partitioned on the join key. DBMS copies the table and shuffles around nodes such that data at each node have the same range of partition keys. Then the join algorithm is carried out.
 
 **Semi-join**: Join query where the results only contain the columns from the left table.
+
+**Managed DBMS**: No significant modification for a DMBS to be aware that it is running in a cloud environment.
+
+**Cloud-native DBMS**: The DBMS is designed explicitly to run in a cloud environment. It is usually based on a shared disk architecture.
 
 **Serverless database**: Shared-disk architecture. The compute nodes are only spinned up when necessary. If idle, the buffer pool and page tables are evicted to the disk before the node is shut down.
 

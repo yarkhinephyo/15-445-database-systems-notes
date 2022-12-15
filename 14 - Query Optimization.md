@@ -1,6 +1,6 @@
-**Physical operator**: Define an execution strategy using an access path. Not always 1:1 mapping from logical operator.
+**Physical operator**: Define an execution strategy using an access path. Not always 1:1 mapping from logical operator. For example, inner join (logical) is mapped to hash join (physical).
 
-**Architecture**
+**Architecture of DBMS that converts query to physical plan**
 
 1. SQL Rewriter (Rare): Convert SQL to SQL string.
 2. SQL Parser spits out abstract syntax tree.
@@ -8,27 +8,27 @@
 4. Tree Rewriter (Common): Rewrite logical plan.
 5. Optimizer estimates cost with cost model and produces a physical plan.
 
-**Heuristics**: Rewrite the query to remove inefficiency without examining the data.
+**Logical query optimization steps**
 
-**Cost based search**: Enumerate multiple equivalent plans and produce the one with lowest cost.
+Transform logical plan with pattern matching rules. Increases the likelihood of enumerating the optimal plan in the search.
 
-**Logical plan optimization**: Transform logical plan with pattern matching rules. Increases the likelihood of enumerating the optimal plan in the search.
-
-<u>1. Split conjunctive predicates</u> - Decompose predicates into their simplest forms.
+1. <u>Split conjunctive predicates</u> - Decompose predicates into their simplest forms.
 
 ![](images/Pasted%20image%2020221026224907.png)
 
-<u>2. Predicate pushdown</u> - Move predicate to the lowest applicable point.
+2. <u>Predicate pushdown</u> - Move predicate to the lowest applicable point to ensure the DBMS applies the most selective one first.
 
-<u>3. Replace cartesian products</u> - Replace cartesian products with inner joins using the join predicates.
+3. <u>Replace cartesian products</u> - Replace cartesian products with inner joins using the join predicates.
 
 ![](images/Pasted%20image%2020221026225633.png)
 
-<u>4. Projection pushdown</u> - Eliminate redundant attributes before the pipeline breakers.
+4. <u>Projection pushdown</u> - Eliminate redundant attributes before the pipeline breakers, as pipeline breakers disrupt efficient streaming of iterators and are expensive.
 
 ![](images/Pasted%20image%2020221026225916.png)
 
-**Nested subqueries**: Rewrite to flatten them or decompose and store result to temporary table.
+**Nested subqueries**
+
+Rewrite to flatten them or decompose and store result to temporary table.
 
 Correlated queries gets rewritten as a join.
 
@@ -43,27 +43,25 @@ Uncorrelated queries have results stored in a temporary location.
 1. Remove impossible/unnecessary predicates.
 2. Merging predicates. (Combining range of values)
 
-**Cost-based search**
+**Cost-based search to evaluate equivalent plans**
 
-Cost can be physical costs (CPU cycles, cache misses), logical costs (estimate output size per operator), algorithmic costs (complexity of the operator algorithm). 
+Enumerate multiple equivalent plans and produce the one with lowest cost. Cost can be physical costs (CPU cycles, cache misses), logical costs (estimate output size per operator), algorithmic costs (complexity of the operator algorithm). 
 
 **Selection cardinality**
 
-Selection of a predicate is the fraction of tuples that qualify.
+Selection of a predicate is the fraction of tuples that qualify.  Assumptions are -
 
-<u>Assumption 1</u>: Distribution of values is uniform.
+1. Distribution of values is uniform.
+2. Predicates are independent.
+3. Every tuple in inner table is guaranteed to exist in outer table during join.
 
-<u>Assumption 2</u>: Predicates are independent.
+The assumptions does not always hold true. For example, a model of a car may only be made by a brand. If there are 10 models and 10 brands, the selectivity is 0.01 with assumption 1 and 2, but it is not true in practice.
 
-<u>Assumption 3</u>: Every tuple in inner table is guaranteed to exist in outer table during join.
+<u>Ways to estimate selectivity</u>
 
-The assumptions does not always hold true. For example, a model of a car may only be made by a brand. If there are 10 models and 10 brands, the selectivity is 0.01 with assumption 1 and 2 but it is not true.
-
-Equai-width histogram can be used to maintain counts instead of each unique key.
-
-Sketches are probabilistic data structures that approximate statistics about a data set. Histograms can be replaced with sketches to improve selectivity estimate accuracy.
-
-Sampling can be done to create smaller tables to estimate selectivities.
+1. Equai-width or equi-depth histograms can be used to maintain counts instead of each unique key.
+2. Sketches are probabilistic data structures that approximate statistics about a data set. Histograms can be replaced with sketches to improve selectivity estimate accuracy.
+3. Sampling can be done to create smaller tables to estimate selectivities.
 
 **Single-relation query planning**
 

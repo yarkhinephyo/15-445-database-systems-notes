@@ -42,7 +42,9 @@ Assuming a buffer pool holds <u>B</u> pages and there are <u>N</u> pages in the 
 
 **Aggregation**: Collapsing multiple tuples into a single scalar value. There are sorting and hashing approaches but in general hashing approach is better.
 
-**Sorting aggregation**
+**1. Sorting aggregation**
+
+DBMS runs a sorting algorithm, either in-memory or external merge sort. Then it does a sequential scan over the sorted data to compute the aggregation.
 
 ```
 SELECT DISTINCT cid
@@ -51,11 +53,9 @@ WHERE grade IN ('B', 'C')
 ORDER BY cid
 ```
 
-Filter for ('B', 'C'), remove unnecessary columns and eliminate duplicates along the way.
+Filters for ('B', 'C'), removes unnecessary columns and eliminates duplicates along the way. <u>Note</u> - In this example, sorting helps with removing duplication. However, if there is no "ORDER BY" clause, hashing aggregating will be cheaper.
 
-<u>Note</u> - In this example, sorting helps with removing duplication. However, if there is no "ORDER BY" clause, hashing aggregating will be cheaper.
-
-**Hashing aggregation**
+**2. Hashing aggregation**
 
 <u>In-memory</u> - Populate an ephemeral hash table as DBMS scans table and check whether the record already exists.
 

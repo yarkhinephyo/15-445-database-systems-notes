@@ -8,7 +8,7 @@ Locks isolate user transactions while latches isolate threads.
 
 **Lock execution**
 
-1. Transaction requests lock.
+1. Transaction requests lock (or upgrades).
 2. Lock manager grants or blocks requests.
 3. Transaction releases lock.
 4. Lock manage updates the internal lock-table.
@@ -16,7 +16,7 @@ Locks isolate user transactions while latches isolate threads.
 **Two-phased locking (Pessimistic protocol)**
 
 1. <u>Growing</u> - Transaction requests all the locks it need. (Cannot unlock during growing phase)
-2. <u>Shrinking</u> - Transaction is allowed to only release or downgrade locks that it previously acquired.
+2. <u>Shrinking</u> - Transaction is allowed to only release or downgrade locks that it previously acquired. Shrinking phase is entered immediately after the first lock is released.
 
 ![](images/Pasted%20image%2020221101120914.png)
 

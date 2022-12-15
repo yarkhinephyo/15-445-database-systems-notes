@@ -1,10 +1,8 @@
-**Transaction**: A sequence of one or more operations to perform some higher level function.
+**Transaction**: A sequence of one or more operations to perform some higher level function. In SQL, starts with "BEGIN" and ends with "COMMIT" or "ABORT".
 
-<u>Transfer money example</u> - Check balance. Deduct balance. Add to the receipient's account.
+<u>Example</u> - Check balance. Deduct balance. Add to the receipient's account.
 
-**SQL Transactions**: Starts with "BEGIN" and ends with "COMMIT" or "ABORT".
-
-**ACID**
+**ACID properties**
 
 <u>Atomic</u> - All happens or none happens.
 
@@ -32,17 +30,19 @@ Database only sees "READ" and "WRITE" transactions, it does not know about commu
 
 ![](images/Pasted%20image%2020221027123605.png)
 
-**Schedules**: Schedule is correct if it is equivalent is <u>serial execution</u>. <u>Equivalent schedules</u> mean that the effect of schedules on the database produces the same states.
+**Schedule**: The order in which the DBMS execute operations.
+
+A schedule is correct if it is equivalent is <u>serial execution</u>. <u>Equivalent schedules</u> mean that the effect of schedules on the database produces the same states.
 
 **Serializable schedule**: Schedule is equivalent is some serial execution of transactions.
 
 **Conflicting operations**: Operations are on different transactions and one of them is a write.
 
-<u>Unrepeatable read</u> - R1, W2, R1, COMMIT1, COMMIT2.
+<u>Unrepeatable read</u> - Caused by read-write conflict. For example, R1, W2, R1, COMMIT1, COMMIT2.
 
-<u>Dirty read</u> - R1, W1, R2, W2, ABORT1, COMMIT2.
+<u>Dirty read</u> - Caused by write-read conflict. For example, R1, W1, R2, W2, ABORT1, COMMIT2.
 
-<u>Lost update</u> - W1, W2, COMMIT1, COMMIT2.
+<u>Lost update</u> - Caused by write-write conflict. For example, W1, W2, COMMIT1, COMMIT2.
 
 **Methods to check serializability (Not to produce)**
 

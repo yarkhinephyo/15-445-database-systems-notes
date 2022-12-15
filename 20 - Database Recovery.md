@@ -1,20 +1,20 @@
-**ARIES**
+**ARIES recovery algorithm**
 
 1. Write-ahead logging (Steal and no-force buffer pool)
 3. Repeating history during redo
 4. Logging changes during undo
 
-**WAL Record**
+**WAL record**
 
 Log sequence number is globally unique number for each log.
 
-- flushedLSN - In-memory tracking of the last LSN log on disk.
+- flushedLSN - <u>In-memory</u> tracking of the last LSN log on disk.
 - pageLSN - Newest update to page. In every page.
-- recLSN - Oldest update to page since it was last flushed. In every page.
+- recLSN - Record which first cause a page to be dirty. In every page.
 - lastLSN - Latest record of a transaction.
 - MasterRecord - LSN of the latest "checkpoint".
 
-Before the DBMS write a page to disk, it must flush the log at least to the point where pageLSN <= flushedLSN. (The latest update is flushed)
+Before the DBMS write a page to disk, it must flush the log at least to the point where pageLSN <= flushedLSN. (The latest update to the page is flushed)
 
 **Writing WAL records**
 
@@ -38,9 +38,9 @@ When the commit finally succeeds (done with internal meta-data updates), write a
 
 **Transaction abort**
 
-"prevLSN" tracks the previous LSN for a transaction.
+All records contain "prevLSN" field that tracks the previous LSN for a transaction.
 
-To abort, the log records need to include the steps we take to undo the transaction.
+To abort, the log records also need to include the steps we have taken so far to undo the transaction. A new type of record called CLR is introduced for this.
 
 ![](images/Pasted%20image%2020221116000812.png)
 
@@ -48,23 +48,21 @@ To abort, the log records need to include the steps we take to undo the transact
 
 CLR record describes an undo action. It contains all the fields of an update record plus the "undoNext" pointer which points to the next LSN to undo.
 
-DBMS does not wait for them to be flushed before notifying the application that transaction aborted.
-
-If the DBMS crash before the ABORT line is flushed, the recovery will undo the changes.
+DBMS <u>does not</u> wait for them to be flushed before notifying the application that transaction aborted. If the DBMS crash before the ABORT line is flushed, the recovery will undo the changes anyway.
 
 If another transaction wants to use the values that were updated during an aborted transaction, the logs will just be appended after CLR records are added. (No need to wait for disk flush)
 
 **Non-fuzzy checkpoints**
 
-Original checkpointing method waits till all active transactions finish before flushing dirty pages to disk. This is bad for runtime performance.
+Blocking Checkpoint method waits till all active transactions to finish before flushing dirty pages to disk. This is bad for runtime performance.
 
-Pause modifying transactions while the DBMS takes checkpoint. No write latches will be acquired on pages.
+Slightly Better Blocking Checkpoint method halts any new transaction while the DBMS takes checkpoint. The existing transactions are only paused. Some metadata is stored.
 
 <u>Metadata</u> - What transactions were running during checkpoint? What pages were dirty during checkpoint? 
 
 **Active transaction table (ATT)**
 
-An entry per active transaction. Remove after "TXN-END" record.
+An entry per active transaction. Remove after "TXN-END" record allears for the transaction.
 
 ```
 (txnId, status, lastLSN)
@@ -74,13 +72,13 @@ An entry per active transaction. Remove after "TXN-END" record.
 
 **Dirty page table (DPT)**
 
-One entry per dirty page in the buffer pool.
-
-**Example**
+One entry per dirty page in the buffer pool. Contains all dirty pages, does not matter if the changes were caused by a transaction running, committed or aborted.
 
 ![](images/Pasted%20image%2020221116094923.png)
 
-**Fuzzy checkpoint**: Allow transactions to keep modifying while taking the snapshot. No attempt to force dirty pages to disk.
+**Fuzzy checkpoint**
+
+Allow transactions to keep modifying while taking the snapshot. No attempt to force dirty pages to disk.
 
 <u>New log records</u> - CHECKPOINT_BEGIN, CHECKPOINT_END{ATT, DPT}
 
@@ -92,7 +90,7 @@ One entry per dirty page in the buffer pool.
 
 Master record is updated to LSN of CHECKPOINT_BEGIN after completion. That is the anchor point to start analysis during recovery.
 
-**Recovery phases**
+**ARIES recovery phases**
 
 ![](images/Pasted%20image%2020221116131732.png)
 
@@ -120,11 +118,11 @@ Remove T96 from ATT after TXN-END is seen.
 
 Scan forward from the log record containing the smallest "recLSN" in DPT. Redo the actions for each update or CLR log records as long as 1) the affected page is in DPT and 2) log record's LSN is equal or more than the page's "recLSN".
 
-To redo, reapply logged update and set the "pageLSN" to log record's LSN. No need logging!
+To redo, reapply logged update and set the "pageLSN" to log record's LSN. No need logging! At the end of the phase, write TXN-END records for all committed transactions and remove them from ATT.
 
 <u>Undo phase</u>
 
-Undo all transactions that were active at the time of crash. Transactions with status "UNDO" after the analysis phase.
+Undo all transactions that were active at the time of crash. Transactions with status "UNDO" in ATT after the analysis phase.
 
 Write a CLR for every modification.
 

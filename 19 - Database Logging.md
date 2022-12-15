@@ -52,7 +52,7 @@ Can write out dirty pages before they are commited. Not required to flush out th
 
 **WAL protocol**
 
-All transaction log records are staged in volatile storage. These are written to non-volatile storage before the page itself is written in non-volatile storage.
+All transaction log records are staged in volatile storage. These are written to non-volatile storage before the page itself is written (flushed) in non-volatile storage.
 
 1. Write a BEGIN log record to mark the starting point.
 2. When transaction finishes, write a COMMIT log record. Make sure all log records are flushed before returning an acknowledgement to the application (client).

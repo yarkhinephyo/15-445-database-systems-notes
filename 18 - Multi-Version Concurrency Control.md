@@ -24,7 +24,7 @@ In this example, transaction with timestamp 2 reads A<sub>0</sub> because the ea
 
 ![](images/Pasted%20image%2020221108131741.png) 
 
-After transaction 1 commits, transaction 2 commits. Under serialization level, transaction 2 would not be able to do so. Under snapshot level, transaction 2 will be able to commit.
+After transaction 1 commits, transaction 2 commits. Let's assume 2PL is being used. Under read committed, transaction 2 would commit. Under snapshot isolation, transaction 2 will abort (If it is deadlock avoidance with first-writer-win rule).
 
 ![](images/Pasted%20image%2020221108132322.png)
 
@@ -54,7 +54,9 @@ Use MVCC for reads so that they do not block the writers. Read-only transactions
 
 Use strict 2PL to schedule the operations of update transactions. Read-only transactions are ignored for 2PL.
 
-**Version storage**: DBMS maintains version chain per logical tuple. Indexes point to the head of the chain.
+**Version storage**
+
+DBMS maintains version chain per logical tuple. Indexes point to the head of the chain.
 
 <u>Append-only</u> - New versions are appended to table on every update. As shown in previous examples.
 
@@ -66,7 +68,7 @@ There are main table and time travel table physically in the database. Update me
 
 ![](images/Pasted%20image%2020221110145610.png)
 
-<u>Delta table</u> - Every update, only copy the values that were modified to the delta storage.
+<u>Delta table</u> - Every update, only copy the values that were modified to the delta storage. Faster writes but slower reads.
 
 ![](images/Pasted%20image%2020221110145916.png)
 
@@ -76,7 +78,7 @@ DBMS needs to remove reclaimable physical versions over time. Need to know if 1)
 
 <u>Tuple-level</u> - Find old versions by examining tuples.
 
-In background vacuuming, background threads scan the table and look for reclaimable versions.
+In background vacuuming, background threads scan the table and look for reclaimable versions (outside active transactions).
 
 In cooperative cleaning, worker threads (not background threads) identify reclaimable versions as they traverse version chain (Only for O2N). Disadvantage is that some tuples may never be reclaimed if unread.
 
@@ -88,5 +90,12 @@ On commit/abort, the transaction provide read and write sets to the centralized 
 
 Primary key indexes point to version chain head (oldest/newest). When primary key is updated, it is treated as delete + insert.
 
-For secondary indexes, there can be a logical pointer that requires an indirection layer (RID, primary key) or a physical pointer that points to the head of version chain. (PosgreSQL) For physical pointer, if there are many secondary indexes, all will have to be updated. (MySQL) After retrieving the logical pointer, the primary key index has to be queried again. If there are many secondary indexes, only the primary index has to be updated.
+![](images/Pasted%20image%2020221213194813.png)
 
+For secondary indexes, there can be a logical pointer that requires an indirection layer (RID, primary key) or a physical pointer that points to the head of version chain. (PosgreSQL)
+
+![](images/Pasted%20image%2020221213194842.png)
+
+![](images/Pasted%20image%2020221213194827.png)
+
+For physical pointer, if there are many secondary indexes, all will have to be updated. (MySQL) For retrieving the logical pointer, the primary key index has to be queried again. If there are many secondary indexes, only the primary index has to be updated.
