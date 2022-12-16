@@ -8,9 +8,9 @@
 
 Log sequence number is globally unique number for each log.
 
-- flushedLSN - <u>In-memory</u> tracking of the last LSN log on disk.
-- pageLSN - Newest update to page. In every page.
-- recLSN - Record which first cause a page to be dirty. In every page.
+- flushedLSN - Tracks of the last LSN log on disk (Kept in RAM).
+- pageLSN - Newest update to page. In every page (Kept on disk).
+- recLSN - Record which first cause a page to be dirty. In every page (Kept in RAM).
 - lastLSN - Latest record of a transaction.
 - MasterRecord - LSN of the latest "checkpoint".
 
@@ -62,7 +62,7 @@ Slightly Better Blocking Checkpoint method halts any new transaction while the D
 
 **Active transaction table (ATT)**
 
-An entry per active transaction. Remove after "TXN-END" record allears for the transaction.
+An entry per active transaction. Remove after "TXN-END" record arrives for the transaction.
 
 ```
 (txnId, status, lastLSN)
@@ -116,7 +116,7 @@ Remove T96 from ATT after TXN-END is seen.
 
 <u>Redo phase</u>
 
-Scan forward from the log record containing the smallest "recLSN" in DPT. Redo the actions for each update or CLR log records as long as 1) the affected page is in DPT and 2) log record's LSN is equal or more than the page's "recLSN".
+Scan forward from the log record containing the smallest "recLSN" in DPT. Redo the actions for each update or CLR log records unless 1) the affected page is not in DPT, or 2) affected page is in DPT but log record's LSN is  less than the page's "recLSN", or 3) affected PageLSN (on disk) >= LSN.
 
 To redo, reapply logged update and set the "pageLSN" to log record's LSN. No need logging! At the end of the phase, write TXN-END records for all committed transactions and remove them from ATT.
 
