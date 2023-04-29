@@ -7,9 +7,9 @@
 
 **Shared memory**: Each processor has a global view of the in-memory data structures. Each DBMS instance on a processor knows about other instances.
 
-**Shared disk**: All CPUs connect to disk via an interconnect. Can scale execution layer <u>independently</u> from storage layer. In theory, can kill the nodes any time, which is an advantage over Shared-Nothing architecture. Must send messages between nodes to know about current states. More common in cloud-based DBMSs.
+**Shared disk**: All CPUs connect to disk via an interconnect. Can scale execution layer <ins>independently</ins> from storage layer. In theory, can kill the nodes any time, which is an advantage over Shared-Nothing architecture. Must send messages between nodes to know about current states. More common in cloud-based DBMSs.
 
-<u>Examples</u> - Spark, Presto, Google BigQuery
+<ins>Examples</ins> - Spark, Presto, Google BigQuery
 
 **Shared nothing**: Nodes communicate with each other via network. Better performance but harder to scale capacity and ensure consistency.
 
@@ -25,7 +25,7 @@ Challenge is when a new node gets added, data has to be shuffled. Safely and tra
 
 **Heterogenous Nodes**: Each node has a specific task. So communication must occur between nodes. Can independently scale from one node to another. For example, MongoDB has router nodes routing queries to shards and config nodes storing mappings from keys to shards.
 
-<u>Example in MonogDB</u>
+<ins>Example in MonogDB</ins>
 
 Router node checks where is the data from the Config node. The router node routes the query to the correct node.
 
@@ -37,21 +37,21 @@ Router node checks where is the data from the Config node. The router node route
 
 DBMS executes query fragments on each partition and combines the results to produce a single answer. Can partition a database physically (shared nothing) or logically (shared disk).
 
-<u>Naive partitioning</u> - A table per node. Assumes that each node has enough storage for each table. Ideal if queries never join across tables and access patterns are uniform.
+<ins>Naive partitioning</ins> - A table per node. Assumes that each node has enough storage for each table. Ideal if queries never join across tables and access patterns are uniform.
 
-<u>Vertical partitioning</u> - Split by attributes into partitions. Must store tuple information to reconstruct the original record. (Similar to a column store)
+<ins>Vertical partitioning</ins> - Split by attributes into partitions. Must store tuple information to reconstruct the original record. (Similar to a column store)
 
-<u>Horizonal partitioning (More common)</u> - Split by partition key and scheme. Choose columns that divide the database equally (size, usage). Examples of partition schemes are hashing, ranges, predicates.
+<ins>Horizonal partitioning (More common)</ins> - Split by partition key and scheme. Choose columns that divide the database equally (size, usage). Examples of partition schemes are hashing, ranges, predicates.
 
 **Logical vs Physical**
 
-<u>Logical partitioning</u>
+<ins>Logical partitioning</ins>
 
 Node communicates with other nodes that responsible for the IDs to retrieve the values.
 
 ![](images/Pasted%20image%2020221120145308.png)
 
-<u>Physical partitioning</u>
+<ins>Physical partitioning</ins>
 
 Each shared nothing nodes read and update tuples stored on its own disk.
 
@@ -80,7 +80,7 @@ Store the data in the closest three partitioning based on consistent hashing.
 
 **Centralized coordination**
 
-<u>TP monitor (Transaction Processing)</u>
+<ins>TP monitor (Transaction Processing)</ins>
 
 1. Application server requests coordinator for locks.
 2. The coordinator acknowledges and the server can use the data.
@@ -90,7 +90,7 @@ Store the data in the closest three partitioning based on consistent hashing.
 
 ![](images/Pasted%20image%2020221120151332.png)
 
-<u>Middleware approach</u>
+<ins>Middleware approach</ins>
 
 ![](images/Pasted%20image%2020221120151551.png)
 

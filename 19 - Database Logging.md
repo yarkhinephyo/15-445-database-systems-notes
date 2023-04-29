@@ -1,16 +1,16 @@
 **Failure classifications**
 
-<u>Transaction failures</u>
+<ins>Transaction failures</ins>
 
 1. Logical errors - Transaction cannot complete due to logical error.
 2. Internal state errors - Terminate active transaction due to an error (deadlock).
 
-<u>System failures</u>
+<ins>System failures</ins>
 
 1. Software failure - Problem with OS or DBMS implementation.
 2. Hardware failure. The computer hosting the DBMS crashes.
 
-<u>Storage media failure</u>
+<ins>Storage media failure</ins>
 
 1. Non-repairable hardware failure. (Unrecoverable)
 
@@ -26,9 +26,9 @@ Must make a copy of a page, only apply changes that T2 made and flush to page. A
 
 ![](images/Pasted%20image%2020221114215122.png)
 
-<u>Advantages</u> - Never have to undo changes of an aborted transaction because the changes are not written to disk. Never have to redo changes because all the changes are guaranteed to be written to disk.
+<ins>Advantages</ins> - Never have to undo changes of an aborted transaction because the changes are not written to disk. Never have to redo changes because all the changes are guaranteed to be written to disk.
 
-<u>Disadvantages</u> - For both transactions in the example commit, the buffer pool manager has to flush page twice. Cannot support writesets that exceed that physical memory (RAM) available.
+<ins>Disadvantages</ins> - For both transactions in the example commit, the buffer pool manager has to flush page twice. Cannot support writesets that exceed that physical memory (RAM) available.
 
 **Shadow paging**
 
@@ -38,15 +38,15 @@ When a transaction commits, overwrite the root pointer to point to the shadow ve
 
 ![](images/Pasted%20image%2020221114221241.png)
 
-<u>Advantages</u> - Never have to redo changes. Undo is only removing the shadow pages.
+<ins>Advantages</ins> - Never have to redo changes. Undo is only removing the shadow pages.
 
-<u>Disadvantages</u> - Copying the entire table is expensive. Data gets fragmented during copy-on-writes. Need garbage-collection. Only supports one transaction at a time.
+<ins>Disadvantages</ins> - Copying the entire table is expensive. Data gets fragmented during copy-on-writes. Need garbage-collection. Only supports one transaction at a time.
 
 **Write-ahead log**
 
 Log contains enough information to undo and redo the database. DBMS must write to disk the log file records of an object before flushing the object to disk.
 
-<u>Steal and no-force policy</u>
+<ins>Steal and no-force policy</ins>
 
 Can write out dirty pages before they are commited. Not required to flush out the dirty pages before saying "committed". (Have to still flush out the log records)
 
@@ -63,7 +63,7 @@ Transaction ID, Object ID, Before Value (Undo), After Value (Redo)
 
 In MVCC, there is no need for "Before Value" because only appending of new values is done; you never need to undo a previous value.
 
-<u>Example</u>
+<ins>Example</ins>
 
 Put the log record in memory before writing to buffer pool.
 
@@ -83,11 +83,11 @@ Flush the logs 1) when there is a timeout or 2) when the buffer is full.
 
 **Logging schemes**
 
-<u>Physical logging</u> - Byte level changes made to a page. (Like git diff) 
+<ins>Physical logging</ins> - Byte level changes made to a page. (Like git diff) 
 
-<u>Logical logging</u> - Record high level operations by transactions such as INSERT, UPDATE.
+<ins>Logical logging</ins> - Record high level operations by transactions such as INSERT, UPDATE.
 
-<u>Physiological logging</u> - Hybrid approach with byte level changes for a single tuple identified by page ID + slot. Don't know the tuple's offset in the page. If there was a vaccuming, the tuple will be still found with page ID and slot.
+<ins>Physiological logging</ins> - Hybrid approach with byte level changes for a single tuple identified by page ID + slot. Don't know the tuple's offset in the page. If there was a vaccuming, the tuple will be still found with page ID and slot.
 
 ![](images/Pasted%20image%2020221114233839.png)
 
@@ -107,6 +107,6 @@ The DBMS periodically takes a checkpoint where all buffers are flushed to disk. 
 4. Write a checkpoint entry in WAL and flush to disk.
 5. Resume queries.
 
-After a crash, need to redo transactions that committed after the checkpoint. In the example below, need to <u>redo</u> T2 and <u>undo</u> T3.
+After a crash, need to redo transactions that committed after the checkpoint. In the example below, need to <ins>redo</ins> T2 and <ins>undo</ins> T3.
 
 ![](images/Pasted%20image%2020221114235628.png)

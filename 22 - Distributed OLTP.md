@@ -2,7 +2,7 @@
 
 How to ensure all nodes agree to a transaction? Assumption is that all nodes in the DBMS are trusted and well-behaved.
 
-<u>Two phase commit</u>
+<ins>Two phase commit</ins>
 
 ![](images/Pasted%20image%2020221122120538.png)
 
@@ -14,9 +14,9 @@ Each node maintains a log of messages in 2 phase commit (2PC). If there is a cra
 
 Coordinator assumes that the node has aborted if no acknowledgement is received.
 
-<u>Early Prepare Voting (Rare)</u> - Coordinator sends the last query to remote node and the node return their vote for the prepared phase with the query result.
+<ins>Early Prepare Voting (Rare)</ins> - Coordinator sends the last query to remote node and the node return their vote for the prepared phase with the query result.
 
-<u>Early Ack After Prepare (Common)</u> - If all nodes vote to commit a transaction, the coordinator tells the application server that commit is successful. The coordinator does not wait for the nodes to acknowledge the commit message.
+<ins>Early Ack After Prepare (Common)</ins> - If all nodes vote to commit a transaction, the coordinator tells the application server that commit is successful. The coordinator does not wait for the nodes to acknowledge the commit message.
 
 **Paxos**
 
@@ -38,13 +38,13 @@ Proposals are marked with incrementing counters (n). If the counter goes up (n+1
 
 **Replica configurations**
 
-<u>Primary-replica</u>
+<ins>Primary-replica</ins>
 
 All updates go to a designed primary. The replicas are updated without atomic commit protocol (through write ahead log). If primary goes down, election is held to select a new primary.
 
 If a write is commited to the primary, the reads at the replica may not see it immediately (lower consistency).
 
-<u>Multi-primary</u>
+<ins>Multi-primary</ins>
 
 Transactions can update objects at any replica. Replicas must synchronize with each other via atomic commit protocol.
 
@@ -52,19 +52,19 @@ Transactions can update objects at any replica. Replicas must synchronize with e
 
 **Propagation levels**
 
-<u>Synchronous (Strong consistency)</u>
+<ins>Synchronous (Strong consistency)</ins>
 
 Primary sends updates to replicas and waits for them to acknowledge that changes are fully applied before changing.
 
-<u>Asynchronous (Eventual consistency)</u>
+<ins>Asynchronous (Eventual consistency)</ins>
 
 Primary immediately returns an acknowledgement to the client without waiting for the replicas to acknowledge.
 
 **Propagation timings**
 
-<u>Continuous</u> - The DBMS sends log messages as it generates them.
+<ins>Continuous</ins> - The DBMS sends log messages as it generates them.
 
-<u>On commit</u> - The DBMS sends log messages only once a transaction commits. Logs are not sent for the aborted transactions. 
+<ins>On commit</ins> - The DBMS sends log messages only once a transaction commits. Logs are not sent for the aborted transactions. 
 
 **CAP Theorem**
 

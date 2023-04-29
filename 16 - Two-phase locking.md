@@ -15,16 +15,16 @@ Locks isolate user transactions while latches isolate threads.
 
 **Two-phased locking (Pessimistic protocol)**
 
-1. <u>Growing</u> - Transaction requests all the locks it need. (Cannot unlock during growing phase)
-2. <u>Shrinking</u> - Transaction is allowed to only release or downgrade locks that it previously acquired. Shrinking phase is entered immediately after the first lock is released.
+1. <ins>Growing</ins> - Transaction requests all the locks it need. (Cannot unlock during growing phase)
+2. <ins>Shrinking</ins> - Transaction is allowed to only release or downgrade locks that it previously acquired. Shrinking phase is entered immediately after the first lock is released.
 
 ![](images/Pasted%20image%2020221101120914.png)
 
-Subjected to <u>cascading aborts</u> which is a performance issue. For example, an abort of one transaction will cause other transactions to abort too.
+Subjected to <ins>cascading aborts</ins> which is a performance issue. For example, an abort of one transaction will cause other transactions to abort too.
 
 ![](images/Pasted%20image%2020221101121255.png)
 
-To avoid <u>dirty reads</u> (reading uncommitted data), we use strong strict 2PL which only release the exclusive locks at the end of transactions. It can release shared locks during the shrinking phase. (In rigorous 2PL, both shared and exclusive locks are held till commit/abort)
+To avoid <ins>dirty reads</ins> (reading uncommitted data), we use strong strict 2PL which only release the exclusive locks at the end of transactions. It can release shared locks during the shrinking phase. (In rigorous 2PL, both shared and exclusive locks are held till commit/abort)
 
 ![](images/Pasted%20image%2020221101121640.png)
 
@@ -38,7 +38,7 @@ To avoid <u>dirty reads</u> (reading uncommitted data), we use strong strict 2PL
 
 **Deadlock detection**
 
-Background thread that builds <u>waits-for graph</u> to keep track of what locks each transaction is waiting to acquire.
+Background thread that builds <ins>waits-for graph</ins> to keep track of what locks each transaction is waiting to acquire.
 
 When detected, a "victim" transaction is restarted or aborted (more common) to break the cycle.
 
@@ -48,9 +48,9 @@ Trade-off between frequency of checking for deadlocks and how long transactions 
 
 **Deadlock prevention**: When a transaction acquires a lock, if it is already held, kill one of them.
 
-<u>Wait-Die</u> - If requesting transaction has higher priority, it waits for holding transaction. If it has lower priority, aborts.
+<ins>Wait-Die</ins> - If requesting transaction has higher priority, it waits for holding transaction. If it has lower priority, aborts.
 
-<u>Wound-Wait</u> - If requesting transaction has higher priority, holding transaction aborts and releases lock. If it has lower priority, it waits.
+<ins>Wound-Wait</ins> - If requesting transaction has higher priority, holding transaction aborts and releases lock. If it has lower priority, it waits.
 
 ![](images/Pasted%20image%2020221101130013.png)
 
@@ -64,11 +64,11 @@ Every transaction holds all the locks as they go down. For example, if you have 
 
 **Intention lock**
 
-<u>Intention-shared</u> - There is some transaction in shared lock at lower level.
+<ins>Intention-shared</ins> - There is some transaction in shared lock at lower level.
 
-<u>Intention-exclusive</u> - There is some transaction in exclusive lock at lower level.
+<ins>Intention-exclusive</ins> - There is some transaction in exclusive lock at lower level.
 
-<u>Shared-intention-exclusive</u> - Node is locked in shared mode and there is some exclusive locking at lower level.
+<ins>Shared-intention-exclusive</ins> - Node is locked in shared mode and there is some exclusive locking at lower level.
 
 ![](images/Pasted%20image%2020221103120102.png)
 

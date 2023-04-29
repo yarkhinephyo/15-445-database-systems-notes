@@ -16,11 +16,11 @@ Snowflake schemas take up less storage space (with less redundant information) b
 
 **Join data from different partitions**
 
-<u>Push model</u> - Send the query to the node which contains the data. Perform as much filtering as possible first. More common in a shared nothing system.
+<ins>Push model</ins> - Send the query to the node which contains the data. Perform as much filtering as possible first. More common in a shared nothing system.
 
 ![](images/Pasted%20image%2020221129121906.png)
 
-<u>Pull model</u> - Bring the data to the node executing the query. More common for a shared disk system.
+<ins>Pull model</ins> - Bring the data to the node executing the query. More common for a shared disk system.
 
  ![](images/Pasted%20image%2020221129121852.png)  
  
@@ -32,8 +32,8 @@ Snowflake schemas take up less storage space (with less redundant information) b
 
 **Query plan fragments**
 
-1. <u>Physical operators</u> - A single query plan is generated and broken into partition-specific fragments.
-2. <u>SQL</u> - Rewrite the original query into partition-specific queries. Local optimization is done at each node.
+1. <ins>Physical operators</ins> - A single query plan is generated and broken into partition-specific fragments.
+2. <ins>SQL</ins> - Rewrite the original query into partition-specific queries. Local optimization is done at each node.
 
 **Distributed join scenarios and algorithms**
 

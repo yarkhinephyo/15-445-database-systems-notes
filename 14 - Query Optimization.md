@@ -12,17 +12,17 @@
 
 Transform logical plan with pattern matching rules. Increases the likelihood of enumerating the optimal plan in the search.
 
-1. <u>Split conjunctive predicates</u> - Decompose predicates into their simplest forms.
+1. <ins>Split conjunctive predicates</ins> - Decompose predicates into their simplest forms.
 
 ![](images/Pasted%20image%2020221026224907.png)
 
-2. <u>Predicate pushdown</u> - Move predicate to the lowest applicable point to ensure the DBMS applies the most selective one first.
+2. <ins>Predicate pushdown</ins> - Move predicate to the lowest applicable point to ensure the DBMS applies the most selective one first.
 
-3. <u>Replace cartesian products</u> - Replace cartesian products with inner joins using the join predicates.
+3. <ins>Replace cartesian products</ins> - Replace cartesian products with inner joins using the join predicates.
 
 ![](images/Pasted%20image%2020221026225633.png)
 
-4. <u>Projection pushdown</u> - Eliminate redundant attributes before the pipeline breakers, as pipeline breakers disrupt efficient streaming of iterators and are expensive.
+4. <ins>Projection pushdown</ins> - Eliminate redundant attributes before the pipeline breakers, as pipeline breakers disrupt efficient streaming of iterators and are expensive.
 
 ![](images/Pasted%20image%2020221026225916.png)
 
@@ -57,7 +57,7 @@ Selection of a predicate is the fraction of tuples that qualify.  Assumptions ar
 
 The assumptions does not always hold true. For example, a model of a car may only be made by a brand. If there are 10 models and 10 brands, the selectivity is 0.01 with assumption 1 and 2, but it is not true in practice.
 
-<u>Ways to estimate selectivity</u>
+<ins>Ways to estimate selectivity</ins>
 
 1. Equai-width or equi-depth histograms can be used to maintain counts instead of each unique key.
 2. Sketches are probabilistic data structures that approximate statistics about a data set. Histograms can be replaced with sketches to improve selectivity estimate accuracy.
@@ -67,11 +67,11 @@ The assumptions does not always hold true. For example, a model of a car may onl
 
 Choose access method (sequentital scan, binary search, index scan). Order predicate evaluation. Simple heuristics are good enough for OLTP.
 
-Query planning for <u>OLTP</u> are easy because "sargable" (Search Argument Able). Usually just picking the best index. Joins are almost always on foreign keys with low cardinality.
+Query planning for <ins>OLTP</ins> are easy because "sargable" (Search Argument Able). Usually just picking the best index. Joins are almost always on foreign keys with low cardinality.
 
 **Multi-relation query planning**
 
-<u>Bottom-up optimization</u>
+<ins>Bottom-up optimization</ins>
 
 Use static rules to perform initial optimization. Then use dynamic programming to determine the best join order for tables using divide-and-conquer.
 
@@ -83,7 +83,7 @@ For each logical operator, come up with access paths and evaluate for the best a
 
 ![](images/Pasted%20image%2020221027211634.png)
 
-<u>Top-down optimization</u>
+<ins>Top-down optimization</ins>
 
 Invoke rules to create new nodes and traverse down the tree. Keep track of the global best plan and do not search if the current access path has more cost than the global plan.
 

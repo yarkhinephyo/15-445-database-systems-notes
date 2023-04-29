@@ -1,30 +1,30 @@
 **Different workloads**
 
-<u>OLTP</u> - Fast operations which update/read small data. The application that people usually build first.
+<ins>OLTP</ins> - Fast operations which update/read small data. The application that people usually build first.
 
-<u>OLAP</u> - Complex queries (read) with a lot of data for aggregates. Reads span multiple entries.
+<ins>OLAP</ins> - Complex queries (read) with a lot of data for aggregates. Reads span multiple entries.
 
-<u>HTAP</u> - OLTP and OLAP together.
+<ins>HTAP</ins> - OLTP and OLAP together.
 
 **N-ary storage model (NSM)**
 
 All attributes for a single tuple contiguously on a page. Querying a single attribute across multiple tuples will cause entire pages (with unnecessary attributes) to be brought in.
 
-<u>Advantages</u> - Fast insert/update. Good for queries that need entire tuple.
+<ins>Advantages</ins> - Fast insert/update. Good for queries that need entire tuple.
 
-<u>Disadvantages</u> - Not good for scanning subset of the attributes.
+<ins>Disadvantages</ins> - Not good for scanning subset of the attributes.
 
 **Decomposition storage model (DSM)**
 
 A single attribute across multiple tuples are stored contiguously in a page.
 
-<u>Disadvantages</u> - Slow for point queries due to stitching.
+<ins>Disadvantages</ins> - Slow for point queries due to stitching.
 
 **Tuple identification in DSM**
 
-<u>Fixed-length offsets</u> - Every value is the same length. Same offsets in different columns match the same tuple.
+<ins>Fixed-length offsets</ins> - Every value is the same length. Same offsets in different columns match the same tuple.
 
-<u>Embedded tuple IDs</u> - Each value is stored with its tuple ID. Instead of arithmetic to calculate offsets, another lookup is required for ID.
+<ins>Embedded tuple IDs</ins> - Each value is stored with its tuple ID. Instead of arithmetic to calculate offsets, another lookup is required for ID.
 
 **Data compression**
 
@@ -32,7 +32,7 @@ Trade off is speed vs compression ratio.
 
 Compression works because datasets tend to have skewed distributions (Items repeated many times). High correlation between attributes of the same tuple.
 
-<u>Three goals</u>
+<ins>Three goals</ins>
 
 - Must produce fixed length compressed data.
 - Postpone decompression as much as possible. We want to operate on compressed data without decompressing first.
@@ -48,7 +48,7 @@ The rest are column level compression.
 
 **Run-length encoding**
 
-Compress runs of the same value in a single column into triplets. (Value, Start position, Number of elements) Requires the columns to be <u>sorted</u> to maximize effectiveness.
+Compress runs of the same value in a single column into triplets. (Value, Start position, Number of elements) Requires the columns to be <ins>sorted</ins> to maximize effectiveness.
 
 **Bit-packing encoding**
 
@@ -56,7 +56,7 @@ Store data as smaller data size than declared. For example, storing LONGs as INT
 
 **Mostly encoding**
 
-Bit-packing variant that uses <u>special maker</u> to indicate when a value exceeds largest size and maintain a lookup table to store them.
+Bit-packing variant that uses <ins>special maker</ins> to indicate when a value exceeds largest size and maintain a lookup table to store them.
 
 **Bitmap encoding**
 
@@ -76,6 +76,6 @@ Maps variable length values to small integer identifiers. Most widely used schem
 
 Strings will be compared as keys in the background which will make queries faster.
 
-<u>Why not hash?</u> Dictionary needs to support encode and decode. Hash function will not work for decoding purpose.
+<ins>Why not hash?</ins> Dictionary needs to support encode and decode. Hash function will not work for decoding purpose.
 
-<u>Order-preserving</u> - Encoded values need to support the same collation as original values (such as range query). This is addressed by sorting the dictionary via value between assigning the keys in order.
+<ins>Order-preserving</ins> - Encoded values need to support the same collation as original values (such as range query). This is addressed by sorting the dictionary via value between assigning the keys in order.

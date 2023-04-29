@@ -2,7 +2,7 @@
 
 DBMS ensures that the contents and the index in sync. DBMS figures out the best indexes to use for each query.
 
-<u>Trade-off</u> - Storage and maintenance overhead vs query time.
+<ins>Trade-off</ins> - Storage and maintenance overhead vs query time.
 
 **B+Tree**
 
@@ -28,7 +28,7 @@ Some DBMS store record IDs as the values. Some DBMS store the tuple data as the 
 
 B Tree stores values in all nodes in the tree. B+Tree only stores in leaf nodes (which means less efficient storage).
 
-In practice, B+Tree is used because updates are cheaper with <u>multiple threads</u>. There is no need to traverse up and down nodes.
+In practice, B+Tree is used because updates are cheaper with <ins>multiple threads</ins>. There is no need to traverse up and down nodes.
 
 **B+Tree insert**
 
@@ -48,13 +48,13 @@ Some DBMS will make a hidden row id primary key to use as clustered index if pri
 
 DBMS can use the B+Tree if query provides any attributes of the search key in the tree. For example if query is `a=5 and b=3` but there is only `b` in the index, it can still be used to narrow down the search.
 
-This is unlike a <u>Hash Index</u> which requires all attributes to match the search key.
+This is unlike a <ins>Hash Index</ins> which requires all attributes to match the search key.
 
 **Tuning B+Tree**
 
-<u>Node size</u> - Larger node sizes for slower storage devices (Can be more than a page).
+<ins>Node size</ins> - Larger node sizes for slower storage devices (Can be more than a page).
 
-<u>Merge threshold</u> - Delaying a merge operation may reduce the amount of reorganization. May be better to let underflows exist and periodically rebuild the tree.
+<ins>Merge threshold</ins> - Delaying a merge operation may reduce the amount of reorganization. May be better to let underflows exist and periodically rebuild the tree.
 
 **Variable length keys**
 
@@ -73,10 +73,10 @@ This is unlike a <u>Hash Index</u> which requires all attributes to match the se
 
 **Optimizations**
 
-<u>Prefix compression</u> - Since sorted keys have similar prefixes (near them), store the common prefixes once and unique suffices for each key.
+<ins>Prefix compression</ins> - Since sorted keys have similar prefixes (near them), store the common prefixes once and unique suffices for each key.
 
-<u>Suffix truncation</u> - Inner nodes do not need entire key. Only store a minimum prefix at inner nodes to correct route queries to the right leaf node.
+<ins>Suffix truncation</ins> - Inner nodes do not need entire key. Only store a minimum prefix at inner nodes to correct route queries to the right leaf node.
 
-<u>Bulk insert</u> - Build a B+Tree by sorting the keys and building the index from bottom up (Instead of adding keys one by one from the top). This is the fastest way to build a tree.
+<ins>Bulk insert</ins> - Build a B+Tree by sorting the keys and building the index from bottom up (Instead of adding keys one by one from the top). This is the fastest way to build a tree.
 
-<u>Pointer swizzling</u> - Normally, the nodes use page_ids to reference other nodes. Buffer pool manager provides the memory location of the page. If pages are pinned in memory, raw pointers can be stored instead of page_ids. No need to go through the buffer pool manager anymore.
+<ins>Pointer swizzling</ins> - Normally, the nodes use page_ids to reference other nodes. Buffer pool manager provides the memory location of the page. If pages are pinned in memory, raw pointers can be stored instead of page_ids. No need to go through the buffer pool manager anymore.

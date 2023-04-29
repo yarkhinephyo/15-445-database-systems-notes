@@ -1,28 +1,28 @@
 **Design decisions for data structures**
 
-<u>Data organization</u> - How to layout data structure in pages to support efficient access.
+<ins>Data organization</ins> - How to layout data structure in pages to support efficient access.
 
-<u>Concurrency</u> - How to enable multiple threads to access the data structure.
+<ins>Concurrency</ins> - How to enable multiple threads to access the data structure.
 
 **Hash table**
 
-<u>Hash function</u> - Map large key space to smaller domain. We do not want a cryptographic hash functions because they are slower.
+<ins>Hash function</ins> - Map large key space to smaller domain. We do not want a cryptographic hash functions because they are slower.
 
-<u>Hashing scheme</u> - Handle key collisions. Trade-off between large hash table (memory) vs time (compute) to find and insert keys.
+<ins>Hashing scheme</ins> - Handle key collisions. Trade-off between large hash table (memory) vs time (compute) to find and insert keys.
 
 **Static hash table**: Giant array with one slot for every element. Just mod the key by number of elements to get the slot number. Assumes perfect hash function.
 
 **Linear probe hashing**: Giant table of slots that resolve collisions by linearly searching for the next free slot in the table. Store key in the index to know when to stop scanning.
 
-<u>Insert</u> - Hash the key and insert at the first empty slot.
+<ins>Insert</ins> - Hash the key and insert at the first empty slot.
 
-<u>Delete</u> - Approach 1 is to store tombstone marker so that finding a key will not terminate at this slot. Approach 2 is to move up the items after the deleted slot (Need to check hashed keys each time).
+<ins>Delete</ins> - Approach 1 is to store tombstone marker so that finding a key will not terminate at this slot. Approach 2 is to move up the items after the deleted slot (Need to check hashed keys each time).
 
 **Non-unique keys**: Hash table that can have multiple key-value pairs.
 
-<u>Separate linked list</u> - The hash slots point to linked lists corresponding to each key.
+<ins>Separate linked list</ins> - The hash slots point to linked lists corresponding to each key.
 
-<u>Redundant keys</u> - Store duplicate key entries together in the hash table. Lookup will be scanning till an empty slot.
+<ins>Redundant keys</ins> - Store duplicate key entries together in the hash table. Lookup will be scanning till an empty slot.
 
 **Robinhood hashing**: Variant of linear probe hashing that steals slots from "rich" keys and give them to "poor" keys.
 
@@ -48,16 +48,16 @@ If bucket has no more space, increment the local counter and split the keys acco
 
 More explanation of algorithm [here](https://youtu.be/r4GkXtH1la8).
 
-<u>Implementation</u> - In practice, if you want buckets to be durable, can allocate a page in the buffer pool which can act as a bucket.
+<ins>Implementation</ins> - In practice, if you want buckets to be durable, can allocate a page in the buffer pool which can act as a bucket.
 
-<u>Problem</u> - During the doubling of table during extendible hashing, requires a latch on entire slot array which will prevent other threads from accessing the table (bottleneck).
+<ins>Problem</ins> - During the doubling of table during extendible hashing, requires a latch on entire slot array which will prevent other threads from accessing the table (bottleneck).
 
 **Linear hashing**: Linear hashing builds on top of chained hashing. Localize the resizing to the splitting bucket instead of doubling the entire array.
 
-<u>Insert</u> - Maintains a pointer that tracks the next bucket to split. If <u>any</u> bucket overflows, split it at pointer location. Add an entry to the slot array (pointing to the splitted bucket). Create a new hash function to find the location of new entry.
+<ins>Insert</ins> - Maintains a pointer that tracks the next bucket to split. If <ins>any</ins> bucket overflows, split it at pointer location. Add an entry to the slot array (pointing to the splitted bucket). Create a new hash function to find the location of new entry.
 
 ![](images/Pasted%20image%2020220917160031.png)
 
-<u>Find</u> - If the hash slot position is less than the split pointer, it means the bucket has been split. Requires using other hashing functions to find the other buckets.
+<ins>Find</ins> - If the hash slot position is less than the split pointer, it means the bucket has been split. Requires using other hashing functions to find the other buckets.
 
-<u>Delete</u> - Can do incremental deletes but in practice may be faster to rebuild.
+<ins>Delete</ins> - Can do incremental deletes but in practice may be faster to rebuild.

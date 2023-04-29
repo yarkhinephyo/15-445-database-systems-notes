@@ -10,21 +10,21 @@
 
 **Locks vs latches (Database world)**
 
-<u>Lock</u>: Protects logical contents from other transactions. Held for transaction duration. Need to be able to rollback changes. (Different from locks in OS)
+<ins>Lock</ins>: Protects logical contents from other transactions. Held for transaction duration. Need to be able to rollback changes. (Different from locks in OS)
 
-<u>Latches</u>: Low level protection primitives to protect regions of memory. Only held for the duration of the operation.
+<ins>Latches</ins>: Low level protection primitives to protect regions of memory. Only held for the duration of the operation.
 
 **Page table vs page directory**
 
-<u>Page directory</u>: Mapping from page IDs to page locations in database files
+<ins>Page directory</ins>: Mapping from page IDs to page locations in database files
 
-<u>Page table</u>: Mapping from page IDs to copies in buffer pool frames. No need to be durable.
+<ins>Page table</ins>: Mapping from page IDs to copies in buffer pool frames. No need to be durable.
 
 **Allocation policies**
 
-<u>Global policy</u> - Decisions for all active transactions.
+<ins>Global policy</ins> - Decisions for all active transactions.
 
-<u>Local policy</u> - Allocate frames to a specific transaction without considering behaviours of other transactions.
+<ins>Local policy</ins> - Allocate frames to a specific transaction without considering behaviours of other transactions.
 
 **Multiple buffer pools**
 
@@ -32,9 +32,9 @@ DBMS usually have multiple buffer pools with their own page tables and policies.
 
 Help reduce latch contention.
 
-<u>Approach 1 to find buffer pool</u> - Embed object identifer in object IDs and maintain a mapping from objects to buffer pools.
+<ins>Approach 1 to find buffer pool</ins> - Embed object identifer in object IDs and maintain a mapping from objects to buffer pools.
 
-<u>Approach 2 to find buffer pool</u> - Hash the page ID to select which buffer pool to access.
+<ins>Approach 2 to find buffer pool</ins> - Hash the page ID to select which buffer pool to access.
 
 **Pre-fetching**: Prefetch pages based on query plan. For example, sequential scans/ index scans.
 
@@ -56,7 +56,7 @@ Relational model does not specify order. So if second query starts at page 3 wit
 
 All the disk operators go through OS API. Most DBMS use direct I/O (O_DIRECT) to bypass the OS's cache.
 
-<u>O_DIRECT</u>: Instructs to bypass page cache and perform any IO operations directly against storage. Buffers in the application space are flushed directly to disk without copying data to page cache and waiting for the write-back operations.
+<ins>O_DIRECT</ins>: Instructs to bypass page cache and perform any IO operations directly against storage. Buffers in the application space are flushed directly to disk without copying data to page cache and waiting for the write-back operations.
 
 **Buffer replacement policies**
 
@@ -66,7 +66,7 @@ Simple way is to use LRU cache to remove page with oldest timestamp.
 
 Each page has a reference bit. If a page is accessed, set to 1. When sweeping, set reference bits from 1 to 0, and evict the 0s.
 
-<u>Problems</u> - Susceptible to sequential flooding. Sequential scan pollutes the buffer pool with pages that are not read again.
+<ins>Problems</ins> - Susceptible to sequential flooding. Sequential scan pollutes the buffer pool with pages that are not read again.
 
 **2. LRU-K**: Track history of last K references' timestamps, compute intervals between them. If intervals are long, evict them.
 
@@ -74,6 +74,6 @@ Each page has a reference bit. If a page is accessed, set to 1. When sweeping, s
 
 **Dirty pages**
 
-<u>Fast evictions</u>: If a page is not dirty, drop it.
+<ins>Fast evictions</ins>: If a page is not dirty, drop it.
 
-<u>Slow evictions</u>: If a page is dirty, DBMS must write back to disk.
+<ins>Slow evictions</ins>: If a page is dirty, DBMS must write back to disk.

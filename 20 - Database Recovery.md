@@ -44,11 +44,11 @@ To abort, the log records also need to include the steps we have taken so far to
 
 ![](images/Pasted%20image%2020221116000812.png)
 
-<u>Compensation log record (CLR)</u>
+<ins>Compensation log record (CLR)</ins>
 
 CLR record describes an undo action. It contains all the fields of an update record plus the "undoNext" pointer which points to the next LSN to undo.
 
-DBMS <u>does not</u> wait for them to be flushed before notifying the application that transaction aborted. If the DBMS crash before the ABORT line is flushed, the recovery will undo the changes anyway.
+DBMS <ins>does not</ins> wait for them to be flushed before notifying the application that transaction aborted. If the DBMS crash before the ABORT line is flushed, the recovery will undo the changes anyway.
 
 If another transaction wants to use the values that were updated during an aborted transaction, the logs will just be appended after CLR records are added. (No need to wait for disk flush)
 
@@ -58,7 +58,7 @@ Blocking Checkpoint method waits till all active transactions to finish before f
 
 Slightly Better Blocking Checkpoint method halts any new transaction while the DBMS takes checkpoint. The existing transactions are only paused. Some metadata is stored.
 
-<u>Metadata</u> - What transactions were running during checkpoint? What pages were dirty during checkpoint? 
+<ins>Metadata</ins> - What transactions were running during checkpoint? What pages were dirty during checkpoint? 
 
 **Active transaction table (ATT)**
 
@@ -68,7 +68,7 @@ An entry per active transaction. Remove after "TXN-END" record arrives for the t
 (txnId, status, lastLSN)
 ```
 
-<u>Status</u> - Running, Committing, Candidate for Undo.
+<ins>Status</ins> - Running, Committing, Candidate for Undo.
 
 **Dirty page table (DPT)**
 
@@ -80,7 +80,7 @@ One entry per dirty page in the buffer pool. Contains all dirty pages, does not 
 
 Allow transactions to keep modifying while taking the snapshot. No attempt to force dirty pages to disk.
 
-<u>New log records</u> - CHECKPOINT_BEGIN, CHECKPOINT_END{ATT, DPT}
+<ins>New log records</ins> - CHECKPOINT_BEGIN, CHECKPOINT_END{ATT, DPT}
 
 ![](images/Pasted%20image%2020221116095435.png)
 
@@ -94,7 +94,7 @@ Master record is updated to LSN of CHECKPOINT_BEGIN after completion. That is th
 
 ![](images/Pasted%20image%2020221116131732.png)
 
-<u>Analysis phase</u>
+<ins>Analysis phase</ins>
 
 Scans forward from the last checkpoint.  If a log record is not in ATT, add it with status "UNDO". On commit, change transaction status to "COMMIT". If TXN-END record is found, remove the corresponding transaction from ATT.
 
@@ -114,13 +114,13 @@ Remove T96 from ATT after TXN-END is seen.
 
 ![](images/Pasted%20image%2020221116132918.png)
 
-<u>Redo phase</u>
+<ins>Redo phase</ins>
 
 Scan forward from the log record containing the smallest "recLSN" in DPT. Redo the actions for each update or CLR log records unless 1) the affected page is not in DPT, or 2) affected page is in DPT but log record's LSN is  less than the page's "recLSN", or 3) affected PageLSN (on disk) >= LSN.
 
 To redo, reapply logged update and set the "pageLSN" to log record's LSN. No need logging! At the end of the phase, write TXN-END records for all committed transactions and remove them from ATT.
 
-<u>Undo phase</u>
+<ins>Undo phase</ins>
 
 Undo all transactions that were active at the time of crash. Transactions with status "UNDO" in ATT after the analysis phase.
 

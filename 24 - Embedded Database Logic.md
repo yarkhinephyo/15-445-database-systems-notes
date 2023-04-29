@@ -4,11 +4,11 @@ Treated as functions to be used inside the database (E.g - how concat() is used)
 
 If multiple applications use the same logic, there is less room for error. Some logic is difficult to convey with SQL too.
 
-There are <u>SQL Functions</u> and <u>External Programming Languages.</u>
+There are <ins>SQL Functions</ins> and <ins>External Programming Languages.</ins>
 
-<u>Pros</u> - For the programmers, some logic is easier to implement in UDF (Iterative programming).
+<ins>Pros</ins> - For the programmers, some logic is easier to implement in UDF (Iterative programming).
 
-<u>Cons</u> - If a query uses the functions, the DBMS cannot optimize well because the functions are treated as a black box. DBMS also only uses a single thread due to the same reason so there will be less parallelization.
+<ins>Cons</ins> - If a query uses the functions, the DBMS cannot optimize well because the functions are treated as a black box. DBMS also only uses a single thread due to the same reason so there will be less parallelization.
 
 ![](images/Pasted%20image%2020221201123251.png)
 

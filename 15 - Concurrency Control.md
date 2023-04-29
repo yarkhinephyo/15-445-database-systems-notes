@@ -1,22 +1,22 @@
 **Transaction**: A sequence of one or more operations to perform some higher level function. In SQL, starts with "BEGIN" and ends with "COMMIT" or "ABORT".
 
-<u>Example</u> - Check balance. Deduct balance. Add to the receipient's account.
+<ins>Example</ins> - Check balance. Deduct balance. Add to the receipient's account.
 
 **ACID properties**
 
-<u>Atomic</u> - All happens or none happens.
+<ins>Atomic</ins> - All happens or none happens.
 
-<u>Consistency</u> - If the database is correct and the transaction is correct, the database will remain correct.
+<ins>Consistency</ins> - If the database is correct and the transaction is correct, the database will remain correct.
 
-<u>Isolation</u> - Illusions that transactions occur in serial order.
+<ins>Isolation</ins> - Illusions that transactions occur in serial order.
 
-<u>Durability</u> - If a transaction commits, the effects persist.
+<ins>Durability</ins> - If a transaction commits, the effects persist.
 
 **Atomicity mechanism**
 
-<u>Logging</u> - DBMS logs all actions so that undo can be done on aborted transactions.
+<ins>Logging</ins> - DBMS logs all actions so that undo can be done on aborted transactions.
 
-<u>Shadow paging</u> - Makes copies of individual pages and makes changes to those copies. Only when a transaction commits, the page is visible to others. Rarely used because of fragmentation issues. Advantage is that the original database is fine if there is a crash.
+<ins>Shadow paging</ins> - Makes copies of individual pages and makes changes to those copies. Only when a transaction commits, the page is visible to others. Rarely used because of fragmentation issues. Advantage is that the original database is fine if there is a crash.
 
 **Isolation of transactions**: Interleave the transactions while making them appear as if they were run one at a time.
 
@@ -32,21 +32,21 @@ Database only sees "READ" and "WRITE" transactions, it does not know about commu
 
 **Schedule**: The order in which the DBMS execute operations.
 
-A schedule is correct if it is equivalent is <u>serial execution</u>. <u>Equivalent schedules</u> mean that the effect of schedules on the database produces the same states.
+A schedule is correct if it is equivalent is <ins>serial execution</ins>. <ins>Equivalent schedules</ins> mean that the effect of schedules on the database produces the same states.
 
 **Serializable schedule**: Schedule is equivalent is some serial execution of transactions.
 
 **Conflicting operations**: Operations are on different transactions and one of them is a write.
 
-<u>Unrepeatable read</u> - Caused by read-write conflict. For example, R1, W2, R1, COMMIT1, COMMIT2.
+<ins>Unrepeatable read</ins> - Caused by read-write conflict. For example, R1, W2, R1, COMMIT1, COMMIT2.
 
-<u>Dirty read</u> - Caused by write-read conflict. For example, R1, W1, R2, W2, ABORT1, COMMIT2.
+<ins>Dirty read</ins> - Caused by write-read conflict. For example, R1, W1, R2, W2, ABORT1, COMMIT2.
 
-<u>Lost update</u> - Caused by write-write conflict. For example, W1, W2, COMMIT1, COMMIT2.
+<ins>Lost update</ins> - Caused by write-write conflict. For example, W1, W2, COMMIT1, COMMIT2.
 
 **Methods to check serializability (Not to produce)**
 
-<u>Conflict serializability</u> - DBMS generally try to support this.
+<ins>Conflict serializability</ins> - DBMS generally try to support this.
 
 Two schedules are conflict equivalent if both schedules involve same actions of same transactions and every pair of conflicting actions is ordered in the same way.  Schedule is conflict serializable if it is conflict equivalent to some serial schedule. (Can transform the schedule by swapping non-conflicting operations of different transactions)
 
@@ -54,4 +54,4 @@ For more than two transactions, draw out a precedence graph where edges are draw
 
 ![](images/Pasted%20image%2020221101112516.png)
 
-<u>View serializability</u> - No DBMS does this. Required to understand the application logic.
+<ins>View serializability</ins> - No DBMS does this. Required to understand the application logic.

@@ -1,4 +1,4 @@
-The DBMS maintains multiple <u>physical</u> versions of a single local object. Transactions read the newest version of the object when the transaction started.
+The DBMS maintains multiple <ins>physical</ins> versions of a single local object. Transactions read the newest version of the object when the transaction started.
 
 **Advantages**
 
@@ -8,9 +8,9 @@ The DBMS maintains multiple <u>physical</u> versions of a single local object. T
 
 **Implementation**
 
-Timestamps are assigned to transactions at the <u>start of transaction</u>. This is different from OCC where they are assigned at the validation phase.
+Timestamps are assigned to transactions at the <ins>start of transaction</ins>. This is different from OCC where they are assigned at the validation phase.
 
-<u>Example 1</u>
+<ins>Example 1</ins>
 
 A<sub>0</sub> will be read by transactions between 0 inclusive and 2 exclusive. So transaction with timestamp 1 will always read A<sub>0</sub>.
 
@@ -18,7 +18,7 @@ In a separate location, track whether transactions have been committed.
 
 ![](images/Pasted%20image%2020221108130317.png)
 
-<u>Example 2</u>
+<ins>Example 2</ins>
 
 In this example, transaction with timestamp 2 reads A<sub>0</sub> because the earlier transaction has not committed yet even though there was a write.
 
@@ -34,17 +34,17 @@ When a transaction starts, it sees a consistent snapshot of the database from th
 
 The database enforces that two committed transactions have disjoint write sets.
 
-Prone to <u>write skew anomaly</u>.
+Prone to <ins>write skew anomaly</ins>.
 
 ![](images/Pasted%20image%2020221123193752.png)
 
 **Concurrency control protocol**
 
-<u>Timestamp ordering</u> - Transaction timestamps that determine serial order.
+<ins>Timestamp ordering</ins> - Transaction timestamps that determine serial order.
 
-<u>Optimistic concurrency control</u> - Three-phase protocol with private workspace.
+<ins>Optimistic concurrency control</ins> - Three-phase protocol with private workspace.
 
-<u>Two phase locking</u> - Transaction acquire locks of physical version before reading and writing logical tuples.
+<ins>Two phase locking</ins> - Transaction acquire locks of physical version before reading and writing logical tuples.
 
 **MVCC + Two phase locking**
 
@@ -58,17 +58,17 @@ Use strict 2PL to schedule the operations of update transactions. Read-only tran
 
 DBMS maintains version chain per logical tuple. Indexes point to the head of the chain.
 
-<u>Append-only</u> - New versions are appended to table on every update. As shown in previous examples.
+<ins>Append-only</ins> - New versions are appended to table on every update. As shown in previous examples.
 
 Oldest-to-newest (O2N) ordering means the index points to the oldest part of the chain and adding new version is just appending to the chain, but lookups need to traverse chain. Newest-to-oldest (N2O) ordering means every new version must update index pointers but lookups do not require traversing the chain.
 
-<u>Time-travel</u> - Old versions are copied to separate table space.
+<ins>Time-travel</ins> - Old versions are copied to separate table space.
 
 There are main table and time travel table physically in the database. Update means the value in main table is copied into time travel table and updates the version.
 
 ![](images/Pasted%20image%2020221110145610.png)
 
-<u>Delta table</u> - Every update, only copy the values that were modified to the delta storage. Faster writes but slower reads.
+<ins>Delta table</ins> - Every update, only copy the values that were modified to the delta storage. Faster writes but slower reads.
 
 ![](images/Pasted%20image%2020221110145916.png)
 
@@ -76,13 +76,13 @@ There are main table and time travel table physically in the database. Update me
 
 DBMS needs to remove reclaimable physical versions over time. Need to know if 1) expired 2) safe to reclaim from memory.
 
-<u>Tuple-level</u> - Find old versions by examining tuples.
+<ins>Tuple-level</ins> - Find old versions by examining tuples.
 
 In background vacuuming, background threads scan the table and look for reclaimable versions (outside active transactions).
 
 In cooperative cleaning, worker threads (not background threads) identify reclaimable versions as they traverse version chain (Only for O2N). Disadvantage is that some tuples may never be reclaimed if unread.
 
-<u>Transaction-level</u> - Transactions keep track of old versions.
+<ins>Transaction-level</ins> - Transactions keep track of old versions.
 
 On commit/abort, the transaction provide read and write sets to the centralized vacuum worker.
 
