@@ -68,21 +68,29 @@ Hierarchical locks work on key ranges with different locking modes.
 
 **Isolation levels**
 
-<ins>Strong serializable</ins>: Commits are done in the same order of submission.
+<ins>Serial</ins>: Commits are done in the same order of submission.
 
 <ins>Serializable</ins>: No phantoms, all reads repeatable, no dirty read.
 
-Index locks (or range locks), plus strict 2PL.
+One implementation is to use index locks (or range locks), plus strict 2PL.
+
+Another implementation is Serializable Snapshot Isolation. It uses an optimistic approach, allowing transactions to proceed without blocking. Before a transaction commits, it is checked and aborted if the execution was not serializable.
+
+<ins>Snapshot isolation</ins>: Phantoms and write skews may happen. Provides repeatable read. Readers and writers do not block the other party.
+
+MVCC is the common implementation. MVCC can be used with 2PL to provide versioning on top of repeatable reads.
 
 <ins>Repeatable reads</ins>: Phantoms may happen.
 
-Strict 2PL.
+Strict 2PL, where both shared locks and exclusive are held to the end of transaction.
 
 <ins>Read committed</ins>: Phantoms and unrepeatable reads may happen.
 
 Strict 2PL where shared locks are released immediately after the operation (no need to be shrinking phase). Guarantees that any data read has been committed at the moment that that it is read, but does not guarantee that it will find the same data again.
 
-<ins>Read uncommitted</ins>:  All may happen.
+Another implementation is that instead of requiring shared lock, while the exclusive lock is being used, DBMS can store two versions of the object. The version before and after the write operation. Other transactions can read the "before" version instead of requiring a lock.
+
+<ins>Read uncommitted</ins>:  All may happen except dirty writes.
 
 2PL for exclusive locks. No shared locks.
 
